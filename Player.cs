@@ -2,44 +2,33 @@
 using System.Collections;
 
 public class Player : MonoBehaviour {
-
-	//public int SpeedMoved;
-	//Vector3 SpMove = new Vector3(0.01F * SpeedMoved, 0.01F * SpeedMoved, 0.01F * SpeedMoved);
 	public bool ItsEnemy;
 	public Vector2 coordinats;
 	public Vector3 position;
-
+	public Animator anim;
+	public int walk = Animator.StringToHash ("Walk");
 	public bool moved;
 	public float speedmoved = 5F;
 
-	// Use this for initialization
 	void Start () {
-	
+		anim = GetComponent<Animator>();
 	}
 
 	void OnMouseDown() {
 		if (!ItsEnemy)
-		GameObject.Find ("Scripts").GetComponent<Move> ().NowPlayer = gameObject;
+			GameObject.Find ("Scripts").GetComponent<Move> ().NowPlayer = gameObject;
 	}
-
-	// Update is called once per frame
-	void Update () {
-
-
-
-		if (moved) {
-
-			transform.position = Vector3.MoveTowards(transform.position, position + Vector3.up * 1.1F, Time.deltaTime * speedmoved);
-
-
-			if (transform.position == position) 
-				moved = false;
-			
 		
+	void Update () {
+		if (moved) {
+			Vector3 newDir = Vector3.RotateTowards(transform.forward, (position - transform.position), 1, 0.0F);
+			transform.rotation = Quaternion.LookRotation(newDir);
+			transform.position = Vector3.MoveTowards(transform.position, position , Time.deltaTime * speedmoved);
+			if (transform.position.x == position.x && transform.position.z == position.z) { 
+				Debug.Log ("Stopped");
+				anim.SetTrigger("Walk");
+				moved = false;
+			}
 		}
-
-
 	}
-
-
 }
